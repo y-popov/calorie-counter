@@ -1,6 +1,11 @@
+import os
 import pytest
 
-from bot.chatgpt import identify_calories, FoodErrors
+from bot.chatgpt import CalorieCounter, FoodErrors
+
+@pytest.fixture(scope="session")
+def calorie_counter() -> CalorieCounter:
+    return CalorieCounter(api_key=os.getenv("OPENAI_API_KEY"))
 
 @pytest.fixture(scope="session")
 def food_image_url() -> str:
@@ -10,12 +15,12 @@ def food_image_url() -> str:
 def not_food_image_url() -> str:
     return "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/500px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg"
 
-def test_identify_calories(food_image_url) -> None:
-    calories = identify_calories(image_url=food_image_url)
+def test_identify_calories(calorie_counter, food_image_url) -> None:
+    calories = calorie_counter.identify_calories(image_url=food_image_url)
     assert calories.total_calories > 0
     assert "ramen" in calories.name.lower()
 
-def test_identify_calories_not_food(not_food_image_url) -> None:
-    calories = identify_calories(image_url=not_food_image_url)
+def test_identify_calories_not_food(calorie_counter, not_food_image_url) -> None:
+    calories = calorie_counter.identify_calories(image_url=not_food_image_url)
     assert calories.error == FoodErrors.NO_FOOD
     assert calories.total_calories == 0
