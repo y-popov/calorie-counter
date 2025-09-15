@@ -6,8 +6,10 @@ from chatgpt import CalorieCounter
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = ("Send me a photo of food and I'll tell you how much calories it's worth!" +
-            "You can provide any text description with a photo ot help with identification.")
+    text = " ".join([
+        "Send me a photo of food and I'll tell you how much calories it's worth!",
+        "You can provide any text description with a photo to help with identification."
+    ])
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 
